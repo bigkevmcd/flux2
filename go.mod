@@ -10,6 +10,7 @@ require (
 	github.com/ProtonMail/go-crypto v1.0.0
 	github.com/cyphar/filepath-securejoin v0.2.5
 	github.com/distribution/distribution/v3 v3.0.0-alpha.1
+	github.com/emicklei/dot v1.6.2
 	github.com/fluxcd/cli-utils v0.36.0-flux.7
 	github.com/fluxcd/go-git-providers v0.20.1
 	github.com/fluxcd/helm-controller/api v1.0.1
