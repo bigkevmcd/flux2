@@ -168,6 +168,23 @@ func withDependsOn(s ...string) func(k *kustomizev1.Kustomization) {
 	}
 }
 
+func TestBuildKustomizationTree(t *testing.T) {
+	kustomization1 := newTestKustomization("kustomization-1")
+	kustomization2 := newTestKustomization("kustomization-2")
+	kustomization3 := newTestKustomization("kustomization-3", withDependsOn("kustomization-1"), withReadyStatus)
+	kustomization4 := newTestKustomization("kustomization-4", withDependsOn("kustomization-2", "kustomization-3"))
+	kustomization5 := newTestKustomization("kustomization-5", withDependsOn("kustomization-4"))
+
+	fc := newFakeClient(t, kustomization1, kustomization2, kustomization3, kustomization4, kustomization5)
+
+	out := buildTree(context.TODO(), fc, kustomization1).Print()
+
+	want := ``
+	if diff := cmp.Diff(want, out); diff != "" {
+		t.Fatalf("failed to render tree: %s\n", diff)
+	}
+}
+
 func withReadyStatus(k *kustomizev1.Kustomization) {
 	k.Status.Conditions = append(k.Status.Conditions, metav1.Condition{
 		Status: metav1.ConditionTrue,

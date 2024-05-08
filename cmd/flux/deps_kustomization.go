@@ -94,7 +94,7 @@ func depsKsCmdRun(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func buildTree(ctx context.Context, kubeClient client.Client, kustomizations []kustomizev1.Kustomization) tree.ObjMetadataTree {
+func buildTree(ctx context.Context, kubeClient client.Client, kustomization *kustomizev1.Kustomization) tree.ObjMetadataTree {
 	kTree := tree.New(object.ObjMetadata{
 		GroupKind: schema.GroupKind{
 			Group: kustomizev1.GroupVersion.Group,
@@ -102,16 +102,14 @@ func buildTree(ctx context.Context, kubeClient client.Client, kustomizations []k
 		},
 	})
 
-	for _, k := range kustomizations {
-		subTree := buildKustomizationTree(ctx, kubeClient, k)
-		kTree.AddTree(subTree)
-	}
+	subTree := buildKustomizationTree(ctx, kubeClient, kustomization)
+	kTree.AddTree(subTree)
 
 	return kTree
 
 }
 
-func buildKustomizationTree(ctx context.Context, kubeClient client.Client, kustomization kustomizev1.Kustomization) tree.ObjMetadataTree {
+func buildKustomizationTree(ctx context.Context, kubeClient client.Client, kustomization *kustomizev1.Kustomization) tree.ObjMetadataTree {
 	kTree := tree.New(object.ObjMetadata{
 		Name:      kustomization.GetName(),
 		Namespace: kustomization.GetNamespace(),
